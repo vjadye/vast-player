@@ -35,12 +35,17 @@ function buttonAction(event, videoElement, playStateButton) {
     }
 }
 
-function isHttpValid(str) {
+function getVerifiedHttpsUrl(str) {
     try {
-        const newUrl = new URL(str);
-        return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
+        var tempUrl = new URL(str);
+        if (tempUrl.protocol === 'http:') {
+            tempUrl.protocol = 'https:';
+        }
+        if (tempUrl.protocol === 'https:') {
+          return tempUrl.toString();
+        }
     } catch (err) {
-        return false;
+        console.log("this is not a valid url");
     }
 }
 
@@ -58,8 +63,11 @@ window.addEventListener('load', function(event) {
     if (event.keyCode == 13) {
          var vastUrlOrBody = vastInput.value;
          console.log("VAST input enter key is pressed with content: " + vastUrlOrBody);
-         if (isHttpValid(vastUrlOrBody)) { // url
-            vastUrl = vastUrlOrBody;
+
+         var verifiedHttpsUrl = getVerifiedHttpsUrl(vastUrlOrBody);
+         console.log("verifiedHttpsUrl: " + verifiedHttpsUrl);
+         if (verifiedHttpsUrl !== undefined) { // url
+            vastUrl = verifiedHttpsUrl;
             initializeIMA();
          } else {
             // TODO : add VAST validation
